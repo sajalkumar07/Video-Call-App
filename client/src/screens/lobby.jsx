@@ -1,16 +1,16 @@
 import React, {useState, useCallback} from 'react'
+import {useSocket} from '../context/socketprovider'
 
 const Lobby = () => {
     const [email, setEmail] = useState("")
     const [room, setRoom] = useState("")
 
+    const socket = useSocket()
+    console.log(socket)
     const handleSubmitForm = useCallback ((e) => {
         e.preventDefault();
-        console.log({
-            email,
-            room,
-        });
-    }, [])
+        socket.emit('room:join',{email, room})
+    }, [email, room, socket])//dependency array
 
   return (
     <div>
