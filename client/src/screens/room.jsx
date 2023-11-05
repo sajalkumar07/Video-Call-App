@@ -116,7 +116,7 @@ const RoomPage = () => {
       {remoteSocketId && <button onClick={handleUserCall}>CALL</button>}
       {myStream && (
         <>
-          <h1>My Stream</h1>
+          <h1>You</h1>
           <ReactPlayer
             playing
             muted
@@ -128,7 +128,7 @@ const RoomPage = () => {
       )}
       {remoteStream && (
         <>
-          <h1>Remote Stream</h1>
+          <h1><Friend></Friend></h1>
           <ReactPlayer
             playing
             muted
