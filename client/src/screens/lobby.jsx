@@ -2,6 +2,7 @@ import React, {useState, useCallback, useEffect} from 'react'
 import { useNavigate } from 'react-router-dom'
 import {useSocket} from '../context/socketprovider'
 
+
 const Lobby = () => {
     const [email, setEmail] = useState("")
     const [room, setRoom] = useState("")
@@ -30,7 +31,7 @@ const Lobby = () => {
 
   return (
     <div>
-        <h1>Lobby</h1>
+        <h1 id='title'>Lobby</h1>
         <form onSubmit={handleSubmitForm}>
             <label htmlFor="">Email</label>
             <input type="email" id='email' value={email} onChange={e=>setEmail(e.target.value)}/>

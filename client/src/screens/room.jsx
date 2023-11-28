@@ -128,7 +128,7 @@ const RoomPage = () => {
       )}
       {remoteStream && (
         <>
-          <h1><Friend></Friend></h1>
+          <h1></h1>
           <ReactPlayer
             playing
             muted
