@@ -2,6 +2,7 @@ import React, { useEffect, useCallback, useState } from 'react';
 import ReactPlayer from 'react-player';
 import peer from '../service/peer';
 import { useSocket } from '../context/socketprovider'; 
+
 const RoomPage = () => {
   const socket = useSocket();
   const [remoteSocketId, setRemoteSocketId] = useState(null);
@@ -13,13 +14,13 @@ const RoomPage = () => {
     setRemoteSocketId(id);
   }, []);
 
-  const handleUserCall = useCallback(async () => { 
+  const handleCallUser = useCallback(async () => {
     const stream = await navigator.mediaDevices.getUserMedia({
       audio: true,
       video: true,
     });
     const offer = await peer.getOffer();
-    socket.emit('user:call', { to: remoteSocketId, offer });
+    socket.emit("user:call", { to: remoteSocketId, offer });
     setMyStream(stream);
   }, [remoteSocketId, socket]);
 
@@ -33,7 +34,7 @@ const RoomPage = () => {
       setMyStream(stream);
       console.log(`Incoming Call`, from, offer);
       const ans = await peer.getAnswer(offer);
-      socket.emit('call:accepted', { to: from, ans });
+      socket.emit("call:accepted", { to: from, ans });
     },
     [socket]
   );
@@ -47,7 +48,7 @@ const RoomPage = () => {
   const handleCallAccepted = useCallback(
     ({ from, ans }) => {
       peer.setLocalDescription(ans);
-      console.log('Call Accepted!');
+      console.log("Call Accepted!");
       sendStreams();
     },
     [sendStreams]
@@ -55,20 +56,20 @@ const RoomPage = () => {
 
   const handleNegoNeeded = useCallback(async () => {
     const offer = await peer.getOffer();
-    socket.emit('peer:nego:needed', { offer, to: remoteSocketId });
+    socket.emit("peer:nego:needed", { offer, to: remoteSocketId });
   }, [remoteSocketId, socket]);
 
   useEffect(() => {
-    peer.peer.addEventListener('negotiationneeded', handleNegoNeeded);
+    peer.peer.addEventListener("negotiationneeded", handleNegoNeeded);
     return () => {
-      peer.peer.removeEventListener('negotiationneeded', handleNegoNeeded);
+      peer.peer.removeEventListener("negotiationneeded", handleNegoNeeded);
     };
   }, [handleNegoNeeded]);
 
   const handleNegoNeedIncomming = useCallback(
     async ({ from, offer }) => {
       const ans = await peer.getAnswer(offer);
-      socket.emit('peer:nego:done', { to: from, ans });
+      socket.emit("peer:nego:done", { to: from, ans });
     },
     [socket]
   );
@@ -78,26 +79,26 @@ const RoomPage = () => {
   }, []);
 
   useEffect(() => {
-    peer.peer.addEventListener('track', async (ev) => {
-      const remoteStreams = ev.streams; 
-      console.log('GOT TRACKS!!');
-      setRemoteStream(remoteStreams[0]); 
+    peer.peer.addEventListener("track", async (ev) => {
+      const remoteStream = ev.streams;
+      console.log("GOT TRACKS!!");
+      setRemoteStream(remoteStream[0]);
     });
   }, []);
 
   useEffect(() => {
-    socket.on('user:joined', handleUserJoined);
-    socket.on('incomming:call', handleIncommingCall);
-    socket.on('call:accepted', handleCallAccepted);
-    socket.on('peer:nego:needed', handleNegoNeedIncomming);
-    socket.on('peer:nego:final', handleNegoNeedFinal);
+    socket.on("user:joined", handleUserJoined);
+    socket.on("incomming:call", handleIncommingCall);
+    socket.on("call:accepted", handleCallAccepted);
+    socket.on("peer:nego:needed", handleNegoNeedIncomming);
+    socket.on("peer:nego:final", handleNegoNeedFinal);
 
     return () => {
-      socket.off('user:joined', handleUserJoined);
-      socket.off('incomming:call', handleIncommingCall);
-      socket.off('call:accepted', handleCallAccepted);
-      socket.off('peer:nego:needed', handleNegoNeedIncomming);
-      socket.off('peer:nego:final', handleNegoNeedFinal);
+      socket.off("user:joined", handleUserJoined);
+      socket.off("incomming:call", handleIncommingCall);
+      socket.off("call:accepted", handleCallAccepted);
+      socket.off("peer:nego:needed", handleNegoNeedIncomming);
+      socket.off("peer:nego:final", handleNegoNeedFinal);
     };
   }, [
     socket,
@@ -111,29 +112,29 @@ const RoomPage = () => {
   return (
     <div>
       <h1>Room Page</h1>
-      <h4>{remoteSocketId ? 'Connected' : 'No one in room'}</h4>
+      <h4>{remoteSocketId ? "Connected" : "No one in room"}</h4>
       {myStream && <button onClick={sendStreams}>Send Stream</button>}
-      {remoteSocketId && <button onClick={handleUserCall}>CALL</button>}
+      {remoteSocketId && <button onClick={handleCallUser}>CALL</button>}
       {myStream && (
         <>
-          <h1>You</h1>
+          <h1>My Stream</h1>
           <ReactPlayer
             playing
             muted
-            height="300px"
-            width="300px"
+            height="100px"
+            width="200px"
             url={myStream}
           />
         </>
       )}
       {remoteStream && (
         <>
-          <h1></h1>
+          <h1>Remote Stream</h1>
           <ReactPlayer
             playing
             muted
-            height="300px"
-            width="300px"
+            height="100px"
+            width="200px"
             url={remoteStream}
           />
         </>
